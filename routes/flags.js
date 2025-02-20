@@ -4,8 +4,12 @@ const FeatureFlag = require("../models/FeatureFlag");
 
 // Show all flags
 router.get("/", async (req, res) => {
-  const flags = await FeatureFlag.find();
-  res.render("index", { flags });
+  try {
+    const flags = await FeatureFlag.find();
+    res.render("index", { flags });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to retrieve feature flags." });
+  }
 });
 
 // Show create form
@@ -26,25 +30,38 @@ router.post("/", async (req, res) => {
 
 // Show edit form
 router.get("/edit/:id", async (req, res) => {
-  const flag = await FeatureFlag.findById(req.params.id);
-  if (!flag) return res.redirect("/flags");
-  res.render("edit", { flag });
+  try {
+    const flag = await FeatureFlag.findById(req.params.id);
+    if (!flag)
+      return res.status(404).json({ message: "Feature flag not found" });
+    res.render("edit", { flag });
+  } catch (error) {
+    res.status(500).json({ message: "Error retrieving feature flag." });
+  }
 });
 
-// Update a flag
-router.post("/update/:id", async (req, res) => {
+// Update a flag (Use PUT instead of POST)
+router.put("/:id", async (req, res) => {
   try {
-    await FeatureFlag.findByIdAndUpdate(req.params.id, req.body);
+    const updatedFlag = await FeatureFlag.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+    if (!updatedFlag)
+      return res.status(404).json({ message: "Feature flag not found" });
     res.redirect("/flags");
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 });
 
-// Delete a flag
-router.post("/delete/:id", async (req, res) => {
+// Delete a flag (Use DELETE instead of POST)
+router.delete("/:id", async (req, res) => {
   try {
-    await FeatureFlag.findByIdAndDelete(req.params.id);
+    const deletedFlag = await FeatureFlag.findByIdAndDelete(req.params.id);
+    if (!deletedFlag)
+      return res.status(404).json({ message: "Feature flag not found" });
     res.redirect("/flags");
   } catch (error) {
     res.status(500).json({ message: error.message });
