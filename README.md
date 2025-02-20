@@ -22,13 +22,7 @@ A simple Node.js + Express + MongoDB application that allows users to create, up
 
 ```sh
 git clone https://github.com/Sv26/Feature-Flags
-cd feature-flag-api
-content_copy
-download
-Use code with caution.
-Markdown
 
-Replace your-username/feature-flag-api.git with the actual repository URL.
 
 2️⃣ Install Dependencies
 
